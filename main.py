@@ -17,16 +17,22 @@ intents.message_content = True
 # Loggeamos el bot con el token del .env
 bot =  discord.Client(intents=intents)
 
+# Cargamos las autoresponses posibles de este archivo
 autoresponse_path = "autoresponse"
 working_dir = os.getcwd()
 
 io_helper = iohelpers.ioHelpers(autoresponse_path)
 io_helper.load_responses()
-# Cargamos las autoresponses posibles
-
-# Eventos a los que el bot responde
+###################################################
+# Eventos a los que el bot responde               #
+###################################################
+# Cosas que hace al arranque
 @bot.event
-# Mensaje con string específica
+async def on_ready():
+    bot.loop.create_task(io_helper.start_periodic_reload(interval=30))
+
+# Cosas que hace al buscar mensajes
+@bot.event
 async def on_message(message):
     if message.author == bot.user:
         return
@@ -34,11 +40,9 @@ async def on_message(message):
         print("Woah mr hacker over here")
         print(io_helper.file_name_list)
         print(io_helper.file_types_list)
-        await message.channel.send("My replies are:")
-        await message.channel.send(io_helper.file_name_list)
-        await message.channel.send("And their formats are:")
-        await message.channel.send(io_helper.file_types_list)
-        
+        await message.channel.send(f"My replies are:```{io_helper.file_name_list}```And their formats are:\n```{io_helper.file_types_list}```")
+
+
     elif message.content in io_helper.file_name_list:
         file_path = os.path.join(working_dir, autoresponse_path, io_helper.file_list[io_helper.file_name_list.index(message.content)])
         if io_helper.file_types_list[io_helper.file_name_list.index(message.content)] in io_helper.TEXT_FORMATS:
