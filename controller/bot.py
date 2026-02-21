@@ -24,7 +24,7 @@ async def on_message(message):
     content = message.content.strip()
 
     # Debug: list all triggers
-    if content == "debug replies":
+    if content == "debug triggers":
         combos = get_combos()
         triggers = [combo["trigger"] for combo in combos]
         await message.channel.send(f"My triggers are:\n```{triggers}```")
