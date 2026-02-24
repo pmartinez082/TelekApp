@@ -56,7 +56,7 @@ def get_trigger(trigger_content):
     c = conn.cursor()
 
     query = """
-        SELECT *
+        SELECT content
         FROM trigger
         WHERE INSTR(LOWER(?), LOWER(content)) > 0
         ORDER BY LENGTH(content) DESC
