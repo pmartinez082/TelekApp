@@ -4,157 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>bot telekil</title>
-    <style>
-
-
-@import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&display=swap');
-
-body {
-    margin: 0;
-    font-family: "Comic Neue", cursive;
-    background: linear-gradient(to bottom, #ffb6c1, #ffe4e1);
-    text-align: center;
-    color: #5a004f;
-}
-
-/* HEADINGS */
-
-h1 {
-    font-size: 2.5rem;
-    color: #ff1493;
-    text-shadow: 2px 2px 0 #ffd700;
-    margin-top: 1.5rem;
-    animation: bounce 1s ease-in-out infinite alternate;
-}
-@keyframes bounce {
-    from { transform: rotate(-2deg) scale(1); }
-    to { transform: rotate(2deg) scale(1.1); }
-}
-
-h2 {
-    color: #ff69b4;
-    text-shadow: 1px 1px 0 white;
-}
-
-/* PANELS */
-
-#combos { 
-    text-align: left;
-}
-
-
-#urkullu,
-#main-content {
-    margin: 2rem auto;
-    padding: 2rem;
-    width: 80%;
-    background: #fff0f5;
-    border: 4px dashed #ff69b4;
-    border-radius: 20px;
-}
-
-/* LABELS */
-
-label {
-    font-weight: bold;
-    color: #c71585;
-}
-
-/* INPUTS */
-
-input {
-    padding: 0.5rem;
-    border-radius: 12px;
-    border: 2px solid #ff69b4;
-    background: white;
-    margin: 0.3rem 0;
-    transition: 0.2s ease;
-}
-
-input:focus {
-    outline: none;
-    border-color: #ff1493;
-    background: #fffafa;
-}
-
-/* BUTTONS */
-
-button {
-    margin-top: 1rem;
-    padding: 0.6rem 1.2rem;
-    font-size: 1rem;
-    font-weight: bold;
-    background: linear-gradient(to bottom, #ffb6c1, #ff69b4);
-    border: 2px solid #c71585;
-    border-radius: 25px;
-    cursor: pointer;
-    color: white;
-    animation: wiggle 0.6s infinite alternate;
-    transition: 0.2s ease;
-}
-
-@keyframes wiggle {
-    from { transform: rotate(-2deg); }
-    to { transform: rotate(2deg); }
-}
-
-button:hover {
-    background: linear-gradient(to bottom, #ff69b4, #ff1493);
-}
-
-/* LOGOUT BUTTON */
-
-#logout {
-    background: linear-gradient(to bottom, #444, #aa0000);
-    border-color: #660000;
-}
-
-/* COMBOS LIST */
-
-#combos {
-    list-style: "💖👄🍓 ";
-    padding: 0;
-}
-
-#combos li {
-    background: #ffe4ec;
-    margin: 0.4rem auto;
-    padding: 0.4rem;
-    width: 60%;
-    border-radius: 15px;
-    border: 2px dotted #ff69b4;
-}
-
-/* IMAGES */
-
-/* IMAGES — dramatic but not nauseating */
-
-img {
-    margin-top: 1rem;
-    border-radius: 20px;
-    border: 3px solid #ff69b4;
-    max-width: 200px;
-    transition: transform 0.3s ease;
-}
-
-/* slow, dignified spin */
-@keyframes elegantSpin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
-
-/* only spin the nerd gif automatically */
-img[src*="nerd"] {
-    animation: elegantSpin 8s linear infinite;
-}
-
-/* other images spin only on hover */
-img:hover {
-    animation: elegantSpin 2s linear infinite;
-}
-
-
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     
@@ -197,7 +47,7 @@ img:hover {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/md5.js"></script>
 <script>
     const token = localStorage.getItem("token-telekapp") || null;
-    const apiUrl =  window.location.origin + "/";
+    const apiUrl =  window.location.origin + "/TelekApp/";
 (async function init() {
   
 
@@ -370,24 +220,59 @@ async function getCombos(token) {
             p.style.fontWeight = "bold";
             p.innerText = combo.trigger;
             combos.appendChild(p);
-            combo.responses.forEach(response => {
-                 const li = document.createElement("li");
-                // if response is a file, display it as an image
-                if (response.endsWith(".png") || response.endsWith(".jpg") || response.endsWith(".jpeg") || response.startsWith("http") || response.endsWith(".gif") || response.endsWith(".mp4"))  {
-                    const img = document.createElement("img");
-                    img.src = response;
-                    img.alt = response;
-                    li.appendChild(img);
-                    combos.appendChild(li);
-                } else {
-                   
-                    li.style.fontStyle = "italic";
-                    li.style.textIndent = "1em";
-                    li.innerText = response;
-                    combos.appendChild(li);
-                
-                }
+combo.responses.forEach(response => {
+    const li = document.createElement("li");
+
+    // Display the response (image or text)
+    if (response.endsWith(".png") || response.endsWith(".jpg") || response.endsWith(".jpeg") || response.startsWith("http") || response.endsWith(".gif") || response.endsWith(".mp4")) {
+        const img = document.createElement("img");
+        img.src = response;
+        img.alt = response;
+        img.style.maxWidth = "200px";
+        li.appendChild(img);
+    } else {
+        const span = document.createElement("span");
+        span.className = "response-text";
+        span.innerText = response;
+        li.appendChild(span);
+    }
+
+    // Add delete button
+    const deleteButton = document.createElement("button");
+    deleteButton.className = "delete-btn";
+    deleteButton.innerText = "💥 Suntsiketa 🗑️";
+
+
+    // Add click event to delete button
+    deleteButton.addEventListener("click", async () => {
+        try {
+            const deleteResponse = await fetch(apiUrl + "autoresponse/delete", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    trigger: combo.trigger,
+                    response: response
+                })
             });
+
+            if (!deleteResponse.ok) {
+                throw new Error(`Failed to delete response! status: ${deleteResponse.status}`);
+            }
+
+            // Refresh the combos list
+            await getCombos(token);
+        } catch (error) {
+            console.error("Error deleting response:", error);
+            alert("Failed to delete response.");
+        }
+    });
+
+    li.appendChild(deleteButton);
+    combos.appendChild(li);
+});
            
            
         });
@@ -416,6 +301,7 @@ async function login() {
                 password_hash: password_hash
             })
         });
+        console.log(apiUrl + "login");
 
         if (!response.ok) {
             throw new Error(`Login failed! status: ${response.status}`);
@@ -435,5 +321,6 @@ async function login() {
         alert("Login failed, please check your credentials.");
     }
 }
+
 </script>
 </html>

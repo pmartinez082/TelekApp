@@ -7,6 +7,9 @@ def get_combos(trigger_content=None):
     """
     Returns combos from SQLite DB.
     Works in any thread/process.
+
+    Escondemos el vibe coding de mierdas web super bien
+    
     """
     conn = sqlite3.connect(DB_PATH)
     conn.execute("PRAGMA foreign_keys = ON;")
@@ -49,19 +52,22 @@ def get_combos(trigger_content=None):
     return list(result.values())
 
 def get_trigger(trigger_content):
-    """Wildcard (tarjeta salvaje RAWR)"""
+    # Ni de palo dejo pasar wildcards
     conn = sqlite3.connect(DB_PATH)
     conn.execute("PRAGMA foreign_keys = ON;")
     conn.row_factory = sqlite3.Row
     c = conn.cursor()
 
+    # NO TOCAR >.>
     query = """
         SELECT content
         FROM trigger
-        WHERE INSTR(LOWER(?), LOWER(content)) > 0
+        WHERE LOWER(content) = LOWER(?)
         ORDER BY LENGTH(content) DESC
         LIMIT 1;
     """
+    # NO TOCAR >.>
+ 
     c.execute(query, (trigger_content,))
     row = c.fetchone()
     conn.close()
@@ -70,7 +76,8 @@ def get_trigger(trigger_content):
 def get_random_response(trigger_content):
     match = get_trigger(trigger_content)
     if match:
-        combo = get_combos(match)
+        # Get combos espera una string, no un objeto de sqlite
+        combo = get_combos(match["content"])
         if combo and combo["responses"]:
             return random.choice(combo["responses"])
         return None
