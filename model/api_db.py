@@ -72,8 +72,8 @@ def get_combos(trigger_content=None):
 
     if trigger_content:
         return result.get(trigger_content)
-
-    return list(result.values())
+    sorted_list = sorted(result.values(), key=lambda x: x['trigger'])
+    return list(sorted_list)
 
 
 # =========================
@@ -177,9 +177,6 @@ def delete_combo(trigger_content, response_content):
     db.commit()
     print(f"[DEBUG] Total rows deleted: {deleted_rows}")
     return deleted_rows
-
-
-
 
 def authenticate(username, password_hash):
     db = get_db()

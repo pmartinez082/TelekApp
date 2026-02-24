@@ -3,15 +3,10 @@ from controller.api import run_api
 from controller.bot import run_bot
 
 if __name__ == '__main__':
-   
-    # Start Flask API in a separate thread
-    
+    # Hilo extra para la API
     api_thread = Thread(target=run_api)
     api_thread.daemon = True
     api_thread.start()
 
-    # Start Discord bot in the main thread
+    # El bot se lleva el hilo principal
     run_bot()
-
-
-    
